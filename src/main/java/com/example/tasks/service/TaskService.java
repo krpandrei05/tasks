@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,4 +92,26 @@ public class TaskService {
                 .build();
     }
 
+    public TaskDTO updateTaskStatus(Long id, String status) {
+        for (TaskDTO t : tasks) {
+            if (t.getId().equals(id)) {
+                t.setStatus(status);
+                log.info("Updated status of task with id: {} to {}", id, status);
+                return t;
+            }
+        }
+        throw new TaskNotFoundException(id);
+    }
+
+    public void deleteAllTasks() {
+        tasks.clear();
+        log.info("Deleted all tasks");
+    }
+
+    public List<TaskDTO> getTasksDueBefore(LocalDateTime date) {
+        log.info("Getting tasks due before: {}", date);
+        return tasks.stream()
+                .filter(task -> task.getDueDate().isBefore(date))
+                .toList();
+    }
 }
