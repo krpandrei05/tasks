@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -27,7 +29,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public List<TaskDTO> addTask(@RequestBody TaskDTO task) {
+    public List<TaskDTO> addTask(@Valid @RequestBody TaskDTO task) {
         return taskService.addTask(task);
     }
 
@@ -37,12 +39,12 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public TaskDTO updateTask(@PathVariable Long id, @RequestBody TaskDTO task) {
+    public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO task) {
         return taskService.updateTask(id, task);
     }
 
     @PostMapping("/batch")
-    public List<TaskDTO> addTasks(@RequestBody List<TaskDTO> tasks) {
+    public List<TaskDTO> addTasks(@Valid @RequestBody List<TaskDTO> tasks) {
         return taskService.addTasksFromList(tasks);
     }
 

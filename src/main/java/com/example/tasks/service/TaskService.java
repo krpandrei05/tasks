@@ -1,17 +1,14 @@
 package com.example.tasks.service;
 
-import com.example.tasks.TasksApplication;
 import com.example.tasks.dto.TaskDTO;
 import com.example.tasks.exception.TaskNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
