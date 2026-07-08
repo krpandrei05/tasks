@@ -60,4 +60,28 @@ public class TaskController {
     public List<TaskDTO> getTasksDueBefore(@RequestParam LocalDateTime date) {
         return taskService.getTasksDueBefore(date);
     }
+
+    // [Homework 1] 1st endpoint
+    @GetMapping("/status/{status}")
+    public List<TaskDTO> getTasksByStatus(@PathVariable String status) {
+        return taskService.getTasksByStatus(status);
+    }
+
+    // [Homework 1] 2nd endpoint
+    @GetMapping("/count")
+    public int getTaskCount() {
+        return taskService.getTasksCount();
+    }
+
+    // [Homework 1] 3rd endpoint
+    @GetMapping("/overdue")
+    public List<TaskDTO> getOverdueTasks() {
+        return taskService.getOverdueTasks();
+    }
+
+    // [Homework 1] 4th endpoint
+    @PatchMapping("/{id}/content")
+    public TaskDTO updateTaskContent(@PathVariable Long id, @RequestBody String content) {
+        return taskService.updateTaskContent(id, content);
+    }
 }

@@ -114,4 +114,39 @@ public class TaskService {
                 .filter(task -> task.getDueDate().isBefore(date))
                 .toList();
     }
+
+    // [Homework 1] 1st endpoint
+    public List<TaskDTO> getTasksByStatus(String status) {
+        log.info("Getting tasks with status: {}", status);
+        return tasks.stream()
+                .filter(task -> task.getStatus().equals(status))
+                .toList();
+    }
+
+    // [Homework 1] 2nd endpoint
+    public int getTasksCount() {
+        log.info("Getting tasks count: {}", tasks.size());
+        return tasks.size();
+    }
+
+    // [Homework 1] 3rd endpoint
+    public List<TaskDTO> getOverdueTasks() {
+        LocalDateTime now = LocalDateTime.now();
+        log.info("Getting overdue tasks. Current date: {}", now);
+        return tasks.stream()
+                .filter(task -> task.getDueDate().isBefore(now))
+                .toList();
+    }
+
+    // [Homework 1] 4th endpoint
+    public TaskDTO updateTaskContent(Long id, String content) {
+        for (TaskDTO t : tasks) {
+            if (t.getId().equals(id)) {
+                t.setContent(content);
+                log.info("Updated content of task with id: {} to {}", id, content);
+                return t;
+            }
+        }
+        throw new TaskNotFoundException(id);
+    }
 }
