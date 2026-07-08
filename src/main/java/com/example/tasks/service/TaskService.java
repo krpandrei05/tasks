@@ -2,12 +2,15 @@ package com.example.tasks.service;
 
 import com.example.tasks.TasksApplication;
 import com.example.tasks.dto.TaskDTO;
+import com.example.tasks.exception.TaskNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @Slf4j
@@ -36,32 +39,47 @@ public class TaskService {
 
     public TaskDTO getTaskByid(Long id) {
         log.info("Getting task by id: {}", id);
-        return tasks.get(Math.toIntExact(id));
+        for (TaskDTO task : tasks) {
+            if (task.getId().equals(id)) {
+                return task;
+            }
+        }
+        throw new TaskNotFoundException(id);
     }
 
     public List<TaskDTO> deleteTask(Long id) {
-        for (TaskDTO task : tasks) {
-            if (task.getId() == id) {
-                log.info("Deleting task with id: {}", id);
-                tasks.remove(task);
-                return tasks;
+        boolean removed = false;
+        Iterator<TaskDTO> iterator = tasks.iterator();
+
+        while (iterator.hasNext()) {
+            TaskDTO task = iterator.next();
+            if (task.getId().equals(id)) {
+                iterator.remove();
+                removed = true;
+                break;
             }
         }
-        log.warn("Task with id: {} not found", id);
+
+        if (removed) {
+            log.info("Deleting task with id: {}", id);
+        } else {
+            log.warn("Task with id: {} not found", id);
+        }
         return tasks;
     }
 
     public TaskDTO updateTask(Long id, TaskDTO task) {
         TaskDTO builtTask = buildTask(task);
         for (TaskDTO t : tasks) {
-            if (t.getId() == id) {
+            if (t.getId().equals(id)) {
                 t.setId(builtTask.getId());
                 t.setContent(builtTask.getContent());
                 t.setDueDate(builtTask.getDueDate());
                 t.setStatus(builtTask.getStatus());
+                return t;
             }
         }
-        return task;
+        throw new TaskNotFoundException(id);
     }
 
     private TaskDTO buildTask(TaskDTO task) {
