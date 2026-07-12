@@ -88,7 +88,7 @@ SELECT * FROM TASKS WHERE TRUNC(CREATION_DATE) = TRUNC(SYSDATE);
 UPDATE tasks SET due_date = TO_DATE('2023-10-05', 'YYYY-MM-DD') WHERE task_id = 1;
 UPDATE tasks SET due_date = TO_DATE('2023-10-05', 'YYYY-MM-DD') WHERE CREATED_BY = 'Ioana';
 
---DELETE
+-- DELETE
 DELETE FROM tasks WHERE task_id = 1;
 
 -- VIEW
@@ -115,3 +115,79 @@ BEGIN
 END;
 
 SELECT GET_task_status(2) FROM DUAL;
+
+
+-- TEMA
+
+-- 1. De inserat 2 rânduri în fiecare tabelă.
+
+-- STATUS_TYPES
+INSERT INTO STATUS_TYPES (status_type_id, status_name, created_by, created_by_fullname)
+VALUES (SYS_GUID(), 'Not Started', 'Andrei', 'SUMMER_SCHOOL');
+
+INSERT INTO STATUS_TYPES (status_type_id, status_name, created_by, created_by_fullname)
+VALUES (SYS_GUID(), 'Completed', 'Andrei', 'SUMMER_SCHOOL');
+
+SELECT * FROM STATUS_TYPES;
+
+-- USERS
+INSERT INTO USERS (username, birth_date, is_internal, created_by, created_by_fullname)
+VALUES ('Mihai', TO_DATE('1985-03-20', 'YYYY-MM-DD'), 1, 'Andrei', 'SUMMER_SCHOOL');
+
+INSERT INTO USERS (username, birth_date, is_internal, created_by, created_by_fullname)
+VALUES ('Elena', TO_DATE('2000-11-05', 'YYYY-MM-DD'), 0, 'Andrei', 'SUMMER_SCHOOL');
+
+SELECT * FROM USERS;
+
+-- TASKS
+INSERT INTO tasks (task_name, status_type_id, user_id, due_date, created_by, creation_date, created_by_fullname)
+VALUES ('Actualizare documentatie API', 
+        (SELECT status_type_id FROM status_types WHERE status_name = 'Pending'), 
+        (SELECT user_id FROM users WHERE username = 'Ioana'), 
+        TO_DATE('05-08-2025', 'DD-MM-YYYY'), 'Andrei', SYSDATE, 'SUMMER_SCHOOL');
+
+INSERT INTO tasks (task_name, status_type_id, user_id, due_date, created_by, creation_date, created_by_fullname)
+VALUES ('Optimizare interogari SQL', 
+        (SELECT status_type_id FROM status_types WHERE status_name = 'In Progress'), 
+        (SELECT user_id FROM users WHERE username = 'Mihai'), 
+        SYSDATE, 'Andrei', SYSDATE, 'SUMMER_SCHOOL');
+
+SELECT * FROM TASKS;
+
+-- 2. De creat interogări care să returneze:
+
+-- 2.1 Toate task-urile care sunt în status ‘Pending’ si au due_date = ‘05-08 2025’.
+SELECT * 
+FROM TASKS t
+WHERE t.status_type_id = (
+    SELECT status_type_id FROM STATUS_TYPES WHERE status_name = 'Pending'
+)
+AND t.due_date = TO_DATE('05-08-2025', 'DD-MM-YYYY');
+
+-- 2.2 Toți userii care au task-uri în status ‘In Progress’ și au vârsta mai mare de 30 de ani.
+SELECT DISTINCT u.*
+FROM USERS u
+JOIN TASKS t ON u.user_id = t.user_id
+JOIN STATUS_TYPES st ON t.status_type_id = st.status_type_id
+WHERE st.status_name = 'In Progress'
+AND TRUNC(MONTHS_BETWEEN(SYSDATE, u.birth_date) / 12) > 30;
+
+-- 3. Documentare despre proceduri + creare procedurã care sa steargã task-urile care sunt în status ‘Cancelled’ si au due_date mai veche de 3 zile. 
+CREATE OR REPLACE PROCEDURE delete_cancelled_tasks AS
+BEGIN
+    DELETE FROM TASKS
+    WHERE status_type_id = (
+        SELECT status_type_id 
+        FROM STATUS_TYPES 
+        WHERE status_name = 'Cancelled'
+    )
+    AND SYSDATE - due_date >= 3;
+
+    COMMIT;
+END;
+
+BEGIN
+    delete_cancelled_tasks;
+END;
+
+SELECT * FROM TASKS;
