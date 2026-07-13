@@ -151,4 +151,17 @@ public class TaskService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
     }
+
+    @Transactional
+    public void transferTasks(Long fromUserId, Long toUserId) {
+        log.info("Transferring tasks from user {} to user {}", fromUserId, toUserId);
+        User newUser = findUser(toUserId);
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(task -> task.getUser() != null && task.getUser().getUserId().equals(fromUserId))
+                .toList();
+
+        for (Task task : tasks) {
+            task.setUser(newUser);
+        }
+    }
 }

@@ -86,4 +86,9 @@ public class TaskController {
     public TaskDTO updateTaskContent(@PathVariable Long id, @RequestBody String taskName) {
         return taskService.updateTaskContent(id, taskName);
     }
+
+    @PatchMapping("/transfer")
+    public void transferTasks(@RequestParam Long fromUserId, @RequestParam Long toUserId) {
+        taskService.transferTasks(fromUserId, toUserId);
+    }
 }

@@ -25,4 +25,9 @@ public class UserController {
     public UserDTO createUser(@RequestBody @Valid UserDTO userDTO) {
         return userService.createUser(userDTO);
     }
+
+    @DeleteMapping("/{id}/with-tasks")
+    public void deleteUserWithTasks(@PathVariable Long id) {
+        userService.deleteUserWithTasks(id);
+    }
 }

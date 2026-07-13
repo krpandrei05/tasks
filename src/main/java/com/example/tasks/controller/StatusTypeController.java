@@ -25,4 +25,9 @@ public class StatusTypeController {
     public StatusTypeDTO createStatus(@RequestBody @Valid StatusTypeDTO statusTypeDTO) {
         return statusTypeService.createStatus(statusTypeDTO);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteStatusAndReassignTasks(@PathVariable String id, @RequestParam String replacementStatusId) {
+        statusTypeService.deleteStatusAndReassignTasks(id, replacementStatusId);
+    }
 }
