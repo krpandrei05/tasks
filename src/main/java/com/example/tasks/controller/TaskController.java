@@ -64,9 +64,9 @@ public class TaskController {
     }
 
     // [Homework 1] 1st endpoint
-    @GetMapping("/status/{statusTypeId}")
-    public List<TaskDTO> getTasksByStatus(@PathVariable String statusTypeId) {
-        return taskService.getTasksByStatus(statusTypeId);
+    @GetMapping("/status/{statusName}")
+    public List<TaskDTO> getTasksByStatus(@PathVariable String statusName) {
+        return taskService.getTasksByStatus(statusName);
     }
 
     // [Homework 1] 2nd endpoint

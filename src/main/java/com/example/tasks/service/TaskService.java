@@ -113,16 +113,16 @@ public class TaskService {
 
     public List<TaskDTO> getTasksDueBefore(LocalDateTime date) {
         log.info("Getting tasks due before: {}", date);
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getDueDate() != null && task.getDueDate().isBefore(date))
+        return taskRepository.findByDueDateBefore(date)
+                .stream()
                 .map(taskMapper::toDto)
                 .toList();
     }
 
-    public List<TaskDTO> getTasksByStatus(String statusTypeId) {
-        log.info("Getting tasks with status type id: {}", statusTypeId);
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getStatusType() != null && task.getStatusType().getStatusTypeId().equals(statusTypeId))
+    public List<TaskDTO> getTasksByStatus(String statusName) {
+        log.info("Getting tasks with status: {}", statusName);
+        return taskRepository.findByStatusType_StatusName(statusName)
+                .stream()
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -135,9 +135,9 @@ public class TaskService {
 
     public List<TaskDTO> getOverdueTasks() {
         LocalDateTime now = LocalDateTime.now();
-        log.info("Getting overdue tasks. Current date: {}", now);
-        return taskRepository.findAll().stream()
-                .filter(task -> task.getDueDate() != null && task.getDueDate().isBefore(now))
+        log.info("Getting overdue tasks (excluding Completed). Current date: {}", now);
+        return taskRepository.findOverdueTasksExcludingDone(now)
+                .stream()
                 .map(taskMapper::toDto)
                 .toList();
     }
