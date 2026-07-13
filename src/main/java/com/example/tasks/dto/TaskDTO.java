@@ -11,17 +11,21 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ToString
 public class TaskDTO {
-    @NotNull(message = "Id cannot be null")
-    private Long id;
+    private Long taskId;
 
-    @NotBlank(message = "Content cannot be blank")
-    private String content;
+    @NotBlank(message = "Task name cannot be blank")
+    private String taskName;
+
+    @NotNull(message = "Status type id cannot be null")
+    private String statusTypeId;
+
+    @NotNull(message = "User id cannot be null")
+    private Long userId;
 
     @NotNull(message = "Due date cannot be null")
     private LocalDateTime dueDate;
 
-    @NotBlank(message = "Status cannot be blank")
-    private String status;
+    private String createdBy;
+    private LocalDateTime creationDate;
 }

@@ -19,17 +19,17 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskDTO> getTask() {
+    public List<TaskDTO> getTasks() {
         return taskService.getTasks();
     }
 
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
-        return taskService.getTaskByid(id);
+        return taskService.getTaskById(id);
     }
 
     @PostMapping
-    public List<TaskDTO> addTask(@Valid @RequestBody TaskDTO task) {
+    public TaskDTO addTask(@Valid @RequestBody TaskDTO task) {
         return taskService.addTask(task);
     }
 
@@ -49,8 +49,8 @@ public class TaskController {
     }
 
     @PatchMapping("/{id}/status")
-    public TaskDTO updateTaskStatus(@PathVariable Long id, @RequestBody String status) {
-        return taskService.updateTaskStatus(id, status);
+    public TaskDTO updateTaskStatus(@PathVariable Long id, @RequestBody String statusTypeId) {
+        return taskService.updateTaskStatus(id, statusTypeId);
     }
 
     @DeleteMapping
@@ -64,9 +64,9 @@ public class TaskController {
     }
 
     // [Homework 1] 1st endpoint
-    @GetMapping("/status/{status}")
-    public List<TaskDTO> getTasksByStatus(@PathVariable String status) {
-        return taskService.getTasksByStatus(status);
+    @GetMapping("/status/{statusTypeId}")
+    public List<TaskDTO> getTasksByStatus(@PathVariable String statusTypeId) {
+        return taskService.getTasksByStatus(statusTypeId);
     }
 
     // [Homework 1] 2nd endpoint
@@ -83,8 +83,7 @@ public class TaskController {
 
     // [Homework 1] 4th endpoint
     @PatchMapping("/{id}/content")
-    public TaskDTO updateTaskContent(@PathVariable Long id, @RequestBody String content) {
-        return taskService.updateTaskContent(id, content);
+    public TaskDTO updateTaskContent(@PathVariable Long id, @RequestBody String taskName) {
+        return taskService.updateTaskContent(id, taskName);
     }
 }
-
