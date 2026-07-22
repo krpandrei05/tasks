@@ -2,7 +2,10 @@ package com.example.tasks.service;
 
 import com.example.tasks.domain.Task;
 import com.example.tasks.domain.User;
+import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UserDTO;
+import com.example.tasks.dto.UserResponseDTO;
+import com.example.tasks.exception.InvalidCredentialsException;
 import com.example.tasks.mapper.UserMapper;
 import com.example.tasks.repository.TaskRepository;
 import com.example.tasks.repository.UserRepository;
@@ -47,5 +50,21 @@ public class UserService {
                 .toList();
         taskRepository.deleteAll(userTasks);
         userRepository.deleteById(userId);
+    }
+
+    public UserResponseDTO login(CredentialsDTO credentialsDTO) {
+        log.info("Login attempt for email: {}", credentialsDTO.getEmail());
+        User user = userRepository.findByEmail(credentialsDTO.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+
+        if (!user.getPassword().equals(credentialsDTO.getPassword())) {
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+
+        return UserResponseDTO.builder()
+                .userId(user.getUserId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .build();
     }
 }

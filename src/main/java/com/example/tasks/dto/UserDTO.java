@@ -18,6 +18,12 @@ public class UserDTO {
     @NotBlank(message = "Username cannot be blank")
     private String username;
 
+    @NotBlank(message = "Email cannot be blank")
+    private String email;
+
+    @NotBlank(message = "Password cannot be blank")
+    private String password;
+
     @NotNull(message = "Birth date cannot be null")
     private LocalDate birthDate;
 

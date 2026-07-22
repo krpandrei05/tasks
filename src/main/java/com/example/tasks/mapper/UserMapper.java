@@ -10,6 +10,8 @@ public class UserMapper {
         return UserDTO.builder()
                 .userId(user.getUserId())
                 .username(user.getUsername())
+                .email(user.getEmail())
+                .password(user.getPassword())
                 .birthDate(user.getBirthDate())
                 .isInternal(user.getIsInternal())
                 .createdBy(user.getCreatedBy())
@@ -20,6 +22,8 @@ public class UserMapper {
     public User toEntity(UserDTO userDTO) {
         return User.builder()
                 .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
                 .birthDate(userDTO.getBirthDate())
                 .isInternal(userDTO.getIsInternal())
                 .createdBy(userDTO.getCreatedBy())
