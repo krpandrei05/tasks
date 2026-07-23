@@ -6,6 +6,7 @@ import com.example.tasks.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jose4j.lang.JoseException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,14 +28,18 @@ public class AuthService {
         String email = new String(Base64.getDecoder().decode(credentialsDTO.getEmail()), StandardCharsets.UTF_8);
         String password = new String(Base64.getDecoder().decode(credentialsDTO.getPassword()), StandardCharsets.UTF_8);
 
-        String hashedPassword = hashMd5(password);
         User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
-        if (user != null && user.getPassword().equals(hashedPassword)) {
+        String hashedPassword = hashMd5(user.getSalt() + password);
+
+        if (user.getPassword().equals(hashedPassword)) {
             return ResponseEntity.ok(jwtService.generateToken(email));
         }
 
-        return ResponseEntity.status(403).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     private String hashMd5(String input) {

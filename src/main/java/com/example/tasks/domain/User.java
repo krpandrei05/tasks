@@ -28,6 +28,9 @@ public class User {
     @Column(name = "PASSWORD")
     private String password;
 
+    @Column(name = "SALT")
+    private String salt;
+
     @Column(name = "BIRTH_DATE")
     private LocalDate birthDate;
 
