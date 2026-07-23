@@ -1,6 +1,7 @@
 package com.example.tasks.controller;
 
 import com.example.tasks.dto.CredentialsDTO;
+import com.example.tasks.dto.UserDTO;
 import com.example.tasks.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,5 +18,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody CredentialsDTO credentialsDTO) throws Exception {
         return authService.login(credentialsDTO);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
+        return authService.register(userDTO);
     }
 }

@@ -2,6 +2,8 @@ package com.example.tasks.service;
 
 import com.example.tasks.domain.User;
 import com.example.tasks.dto.CredentialsDTO;
+import com.example.tasks.dto.UserDTO;
+import com.example.tasks.mapper.UserMapper;
 import com.example.tasks.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 @Slf4j
@@ -21,6 +24,8 @@ import java.util.Base64;
 public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
+
+    private final UserMapper userMapper;
 
     public ResponseEntity<String> login(CredentialsDTO credentialsDTO) throws JoseException {
         log.info("Login attempt (auth flow) for email: {}", credentialsDTO.getEmail());
@@ -54,5 +59,38 @@ public class AuthService {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public ResponseEntity<String> register(UserDTO userDTO) {
+        String email = new String(Base64.getDecoder().decode(userDTO.getEmail()), StandardCharsets.UTF_8);
+
+        if (userRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already is registered");
+        }
+
+        String username = new String(Base64.getDecoder().decode(userDTO.getUsername()), StandardCharsets.UTF_8);
+        String password = new String(Base64.getDecoder().decode(userDTO.getPassword()), StandardCharsets.UTF_8);
+
+        String salt = generateSalt();
+        String hashedPassword = hashMd5(salt + password);
+
+        userDTO.setUsername(username);
+        userDTO.setEmail(email);
+        userDTO.setPassword(hashedPassword);
+
+        User user = userMapper.toEntity(userDTO);
+        user.setSalt(salt);
+
+        userRepository.save(user);
+        log.info("User registered: {}", email);
+
+        return ResponseEntity.status(HttpStatus.OK).body("User registered successfully");
+    }
+
+    private String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] saltBytes = new byte[16];
+        random.nextBytes(saltBytes);
+        return Base64.getEncoder().encodeToString(saltBytes);
     }
 }
