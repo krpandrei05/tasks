@@ -2,8 +2,10 @@ package com.example.tasks.controller;
 
 import com.example.tasks.dto.TaskDTO;
 import com.example.tasks.service.TaskService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -90,5 +92,15 @@ public class TaskController {
     @PatchMapping("/transfer")
     public void transferTasks(@RequestParam Long fromUserId, @RequestParam Long toUserId) {
         taskService.transferTasks(fromUserId, toUserId);
+    }
+
+    // [Homework 5] Search
+    @GetMapping("/search")
+    public List<TaskDTO> searchTasks(
+            @RequestParam(required = false) String taskName,
+            @RequestParam(required = false) String statusName,
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dueDate) {
+        return taskService.searchTasks(taskName, statusName, username, dueDate);
     }
 }

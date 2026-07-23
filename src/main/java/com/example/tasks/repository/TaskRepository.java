@@ -19,4 +19,20 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // @Query explicit
     @Query("SELECT t FROM Task t WHERE t.dueDate < :date AND t.statusType.statusName != 'Completed'")
     List<Task> findOverdueTasksExcludingDone(@Param("date") LocalDateTime date);
+
+    @Query("SELECT t FROM Task t " +
+            "LEFT JOIN t.user u " +
+            "LEFT JOIN t.statusType s " +
+            "WHERE (:taskName IS NULL OR LOWER(t.taskName) LIKE LOWER(CONCAT('%', :taskName, '%'))) " +
+            "AND (:statusName IS NULL OR s.statusName = :statusName) " +
+            "AND (:username IS NULL OR u.username = :username) " +
+            "AND (:startOfDay IS NULL OR t.dueDate >= :startOfDay) " +
+            "AND (:endOfDay IS NULL OR t.dueDate < :endOfDay)")
+    List<Task> searchTasks(
+            @Param("taskName") String taskName,
+            @Param("statusName") String statusName,
+            @Param("username") String username,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay
+    );
 }

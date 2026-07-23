@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -163,5 +164,17 @@ public class TaskService {
         for (Task task : tasks) {
             task.setUser(newUser);
         }
+    }
+
+    public List<TaskDTO> searchTasks(String taskName, String statusName, String username, LocalDate dueDate) {
+        log.info("Searching tasks with filters - name: {}, status: {}, user: {}, dueDate: {}", taskName, statusName, username, dueDate);
+
+        LocalDateTime startOfDay = (dueDate != null) ? dueDate.atStartOfDay() : null;
+        LocalDateTime endOfDay = (dueDate != null) ? dueDate.plusDays(1).atStartOfDay() : null;
+
+        return taskRepository.searchTasks(taskName, statusName, username, startOfDay, endOfDay)
+                .stream()
+                .map(taskMapper::toDto)
+                .toList();
     }
 }
