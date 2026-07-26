@@ -29,7 +29,6 @@ public class JwtService {
         jws.setPayload(claims.toJson());
         jws.setAlgorithmHeaderValue(AlgorithmIdentifiers.HMAC_SHA256);
         jws.setKey(new AesKey(jwtSecret.getBytes(StandardCharsets.UTF_8)));
-
         return jws.getCompactSerialization();
     }
 }
