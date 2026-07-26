@@ -24,4 +24,9 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody UserDTO userDTO) {
         return authService.register(userDTO);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        return authService.getCurrentUser();
+    }
 }

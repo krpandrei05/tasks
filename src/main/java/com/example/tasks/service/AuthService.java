@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jose4j.lang.JoseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -92,5 +94,19 @@ public class AuthService {
         byte[] saltBytes = new byte[16];
         random.nextBytes(saltBytes);
         return Base64.getEncoder().encodeToString(saltBytes);
+    }
+
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        UserDTO userDTO = userMapper.toDto(user);
+        userDTO.setPassword(null);
+
+        return ResponseEntity.ok(userDTO);
     }
 }
