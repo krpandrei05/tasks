@@ -1,5 +1,6 @@
 package com.example.tasks.service;
 
+import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.StatusType;
 import com.example.tasks.domain.Task;
 import com.example.tasks.domain.User;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,11 +29,13 @@ public class TaskService {
     private final TaskMapper taskMapper;
     private final StatusTypeRepository statusTypeRepository;
     private final UserRepository userRepository;
+    private final PermissionChecker permissionChecker;
 
     public List<TaskDTO> getTasks() {
         log.info("Getting tasks");
         return taskRepository.findAll()
                 .stream()
+                .filter(permissionChecker::canAccessTask)
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -40,6 +44,9 @@ public class TaskService {
         log.info("Getting task by id: {}", id);
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
+        if (!permissionChecker.canAccessTask(task)) {
+            throw new AccessDeniedException("Not allowed to access this task");
+        }
         return taskMapper.toDto(task);
     }
 
@@ -70,6 +77,9 @@ public class TaskService {
         log.info("Updating task with id: {}", id);
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
+        if (!permissionChecker.canAccessTask(task)) {
+            throw new AccessDeniedException("Not allowed to modify this task");
+        }
 
         task.setTaskName(taskDTO.getTaskName());
         task.setStatusType(findStatusType(taskDTO.getStatusTypeId()));
@@ -82,8 +92,10 @@ public class TaskService {
     @Transactional
     public void deleteTask(Long id) {
         log.info("Deleting task with id: {}", id);
-        if (!taskRepository.existsById(id)) {
-            throw new TaskNotFoundException(id);
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException(id));
+        if (!permissionChecker.canAccessTask(task)) {
+            throw new AccessDeniedException("Not allowed to delete this task");
         }
         taskRepository.deleteById(id);
     }

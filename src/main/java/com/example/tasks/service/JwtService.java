@@ -19,9 +19,10 @@ public class JwtService {
     @Value("${jwt.expiration.ms}")
     private long jwtExpirationMs;
 
-    public String generateToken(String email) throws JoseException {
+    public String generateToken(String email, Long roleId) throws JoseException {
         JwtClaims claims = new JwtClaims();
         claims.setSubject(email);
+        claims.setClaim("roleId", roleId);
         claims.setIssuedAtToNow();
         claims.setExpirationTimeMinutesInTheFuture((float) jwtExpirationMs / (1000 * 60));
 

@@ -3,6 +3,7 @@ package com.example.tasks.controller;
 import com.example.tasks.dto.TaskDTO;
 import com.example.tasks.service.TaskService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,26 +21,31 @@ public class TaskController {
         this.taskService = taskService;
     }
 
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
     @GetMapping
     public List<TaskDTO> getTasks() {
         return taskService.getTasks();
     }
 
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'CREATE')")
     @PostMapping
     public TaskDTO addTask(@Valid @RequestBody TaskDTO task) {
         return taskService.addTask(task);
     }
 
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'DELETE')")
     @DeleteMapping("/{id}")
     public void deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
     }
 
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'UPDATE')")
     @PutMapping("/{id}")
     public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO task) {
         return taskService.updateTask(id, task);

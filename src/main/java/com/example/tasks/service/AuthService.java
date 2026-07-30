@@ -1,9 +1,11 @@
 package com.example.tasks.service;
 
+import com.example.tasks.domain.Role;
 import com.example.tasks.domain.User;
 import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UserDTO;
 import com.example.tasks.mapper.UserMapper;
+import com.example.tasks.repository.RoleRepository;
 import com.example.tasks.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,8 @@ import java.util.Base64;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
     private final JwtService jwtService;
 
     private final UserMapper userMapper;
@@ -43,7 +47,7 @@ public class AuthService {
         String hashedPassword = hashMd5(user.getSalt() + password);
 
         if (user.getPassword().equals(hashedPassword)) {
-            return ResponseEntity.ok(jwtService.generateToken(email));
+            return ResponseEntity.ok(jwtService.generateToken(email, user.getRole().getRoleId()));
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -82,6 +86,10 @@ public class AuthService {
 
         User user = userMapper.toEntity(userDTO);
         user.setSalt(salt);
+
+        Role defaultRole = roleRepository.findByRoleName("USER")
+                        .orElseThrow(() -> new IllegalStateException("Default role USER not found"));
+        user.setRole(defaultRole);
 
         userRepository.save(user);
         log.info("User registered: {}", email);

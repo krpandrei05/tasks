@@ -37,6 +37,10 @@ public class User {
     @Column(name = "IS_INTERNAL")
     private Integer isInternal;
 
+    @ManyToOne
+    @JoinColumn(name = "ROLE_ID")
+    private Role role;
+
     @Column(name = "CREATED_BY")
     private String createdBy;
 
