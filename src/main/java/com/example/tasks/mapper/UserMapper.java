@@ -16,6 +16,7 @@ public class UserMapper {
                 .isInternal(user.getIsInternal())
                 .createdBy(user.getCreatedBy())
                 .creationDate(user.getCreationDate())
+                .roleName(user.getRole() != null ? user.getRole().getRoleName() : null)
                 .build();
     }
 
