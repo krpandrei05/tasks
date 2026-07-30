@@ -273,4 +273,29 @@ WHERE EMAIL = 'andrei.krp@gmail.com';
 SELECT USER_ID, USERNAME, EMAIL, ROLE_ID FROM USERS WHERE EMAIL = 'andrei.krp@gmail.com';
 
 
+-- USER PERMISSIONS (admin page)
+INSERT INTO PERMISSIONS (permission_action, resource_name) VALUES ('READ', 'USER');
+INSERT INTO PERMISSIONS (permission_action, resource_name) VALUES ('UPDATE', 'USER');
+
+INSERT INTO ROLE_PERMISSIONS (role_id, permission_id)
+SELECT r.role_id, p.permission_id
+FROM ROLES r, PERMISSIONS p
+WHERE r.role_name = 'ADMIN' AND p.resource_name = 'USER';
+
+INSERT INTO ROLE_PERMISSIONS (role_id, permission_id)
+SELECT r.role_id, p.permission_id
+FROM ROLES r, PERMISSIONS p
+WHERE r.role_name = 'USER' AND p.permission_action = 'READ' AND p.resource_name = 'USER';
+
+SELECT * FROM PERMISSIONS;
+SELECT * FROM ROLE_PERMISSIONS ORDER BY role_id;
+
+SELECT rp.role_id, r.role_name, p.permission_action, p.resource_name
+FROM ROLE_PERMISSIONS rp
+JOIN ROLES r ON rp.role_id = r.role_id
+JOIN PERMISSIONS p ON rp.permission_id = p.permission_id
+WHERE p.resource_name = 'USER'
+ORDER BY r.role_id;
+
+
 
