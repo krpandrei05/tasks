@@ -186,6 +186,7 @@ public class TaskService {
 
         return taskRepository.searchTasks(taskName, statusName, username, startOfDay, endOfDay)
                 .stream()
+                .filter(permissionChecker::canAccessTask)
                 .map(taskMapper::toDto)
                 .toList();
     }

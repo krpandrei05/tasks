@@ -32,6 +32,6 @@ public class PermissionChecker {
             return true;
         }
 
-        return task.getUser() != null && task.getUser().getEmail().equals(authentication.getName());
+        return task.getUser() != null && task.getUser().getEmail() != null && task.getUser().getEmail().equals(authentication.getName());
     }
 }
