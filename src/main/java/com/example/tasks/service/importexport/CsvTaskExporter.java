@@ -1,6 +1,5 @@
-package com.example.tasks.importexport;
+package com.example.tasks.service.importexport;
 
-import com.example.tasks.service.importexport.TaskFileRow;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Component;
@@ -30,7 +29,7 @@ public class CsvTaskExporter implements TaskExporter {
                              row.getUsername(),
                              row.getDueDate() != null ? row.getDueDate().toString() : "",
                              row.getCreatedBy() != null ? row.getCreatedBy().toString() : "",
-                             row.getCreationDate() != null ? row.getCreationDate().toString() : "",
+                             row.getCreationDate() != null ? row.getCreationDate().toString() : ""
                      );
                  }
         } catch (IOException e) {

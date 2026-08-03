@@ -1,6 +1,5 @@
-package com.example.tasks.importexport;
+package com.example.tasks.service.importexport;
 
-import com.example.tasks.service.importexport.TaskFileRow;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
