@@ -297,5 +297,5 @@ JOIN PERMISSIONS p ON rp.permission_id = p.permission_id
 WHERE p.resource_name = 'USER'
 ORDER BY r.role_id;
 
-
-
+-- Unicitate pe USERNAME
+ALTER TABLE USERS ADD CONSTRAINT UQ_USERS_USERNAME UNIQUE (USERNAME);
