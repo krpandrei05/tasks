@@ -1,6 +1,7 @@
 package com.example.tasks.config;
 
 import com.example.tasks.domain.Task;
+import com.example.tasks.domain.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -33,5 +34,15 @@ public class PermissionChecker {
         }
 
         return task.getUser() != null && task.getUser().getEmail() != null && task.getUser().getEmail().equals(authentication.getName());
+    }
+
+    public boolean isCurrentUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.getAuthorities().stream().anyMatch(granted -> granted.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    public String getCurrentUserEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null ? authentication.getName() : null;
     }
 }

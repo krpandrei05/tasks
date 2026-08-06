@@ -1,6 +1,8 @@
 package com.example.tasks.repository;
 
 import com.example.tasks.domain.Task;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,16 +25,20 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t " +
             "LEFT JOIN t.user u " +
             "LEFT JOIN t.statusType s " +
-            "WHERE (:taskName IS NULL OR LOWER(t.taskName) LIKE LOWER(CONCAT('%', :taskName, '%'))) " +
+            "WHERE (:ownerEmail IS NULL OR u.email = :ownerEmail) " +
+            "AND (:taskName IS NULL OR LOWER(t.taskName) LIKE LOWER(CONCAT('%', :taskName, '%'))) " +
             "AND (:statusName IS NULL OR s.statusName = :statusName) " +
             "AND (:username IS NULL OR u.username = :username) " +
             "AND (:startOfDay IS NULL OR t.dueDate >= :startOfDay) " +
             "AND (:endOfDay IS NULL OR t.dueDate < :endOfDay)")
-    List<Task> searchTasks(
+    Page<Task> searchTasks(
+            @Param("ownerEmail") String ownerEmail,
             @Param("taskName") String taskName,
             @Param("statusName") String statusName,
             @Param("username") String username,
             @Param("startOfDay") LocalDateTime startOfDay,
-            @Param("endOfDay") LocalDateTime endOfDay
+            @Param("endOfDay") LocalDateTime endOfDay,
+            // OFFSET/FETCH la final de Query
+            Pageable pageable
     );
 }

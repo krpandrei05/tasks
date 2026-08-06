@@ -14,6 +14,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -31,13 +33,14 @@ public class TaskService {
     private final UserRepository userRepository;
     private final PermissionChecker permissionChecker;
 
-    public List<TaskDTO> getTasks() {
-        log.info("Getting tasks");
-        return taskRepository.findAll()
-                .stream()
-                .filter(permissionChecker::canAccessTask)
-                .map(taskMapper::toDto)
-                .toList();
+    public Page<TaskDTO> getTasks(Pageable pageable) {
+        log.info("Getting tasks, page {}", pageable);
+        return searchTasks(null, null, null, null, pageable);
+    }
+
+    // ADMIN
+    public List<TaskDTO> getAllTasks() {
+        return taskRepository.findAll().stream().map(taskMapper::toDto).toList();
     }
 
     public TaskDTO getTaskById(Long id) {
@@ -69,7 +72,8 @@ public class TaskService {
                 .map(dto -> taskMapper.toEntity(dto, findStatusType(dto.getStatusTypeId()), findUser(dto.getUserId())))
                 .toList();
         taskRepository.saveAll(tasks);
-        return getTasks();
+
+        return getAllTasks();
     }
 
     @Transactional
@@ -128,6 +132,7 @@ public class TaskService {
         log.info("Getting tasks due before: {}", date);
         return taskRepository.findByDueDateBefore(date)
                 .stream()
+                .filter(permissionChecker::canAccessTask)
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -136,6 +141,7 @@ public class TaskService {
         log.info("Getting tasks with status: {}", statusName);
         return taskRepository.findByStatusType_StatusName(statusName)
                 .stream()
+                .filter(permissionChecker::canAccessTask)
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -151,6 +157,7 @@ public class TaskService {
         log.info("Getting overdue tasks (excluding Completed). Current date: {}", now);
         return taskRepository.findOverdueTasksExcludingDone(now)
                 .stream()
+                .filter(permissionChecker::canAccessTask)
                 .map(taskMapper::toDto)
                 .toList();
     }
@@ -178,16 +185,15 @@ public class TaskService {
         }
     }
 
-    public List<TaskDTO> searchTasks(String taskName, String statusName, String username, LocalDate dueDate) {
+    public Page<TaskDTO> searchTasks(String taskName, String statusName, String username, LocalDate dueDate, Pageable pageable) {
         log.info("Searching tasks with filters - name: {}, status: {}, user: {}, dueDate: {}", taskName, statusName, username, dueDate);
 
         LocalDateTime startOfDay = (dueDate != null) ? dueDate.atStartOfDay() : null;
         LocalDateTime endOfDay = (dueDate != null) ? dueDate.plusDays(1).atStartOfDay() : null;
 
-        return taskRepository.searchTasks(taskName, statusName, username, startOfDay, endOfDay)
-                .stream()
-                .filter(permissionChecker::canAccessTask)
-                .map(taskMapper::toDto)
-                .toList();
+        // ADMIN = NULL
+        String ownerEmail = permissionChecker.isCurrentUserAdmin() ? null : permissionChecker.getCurrentUserEmail();
+
+        return taskRepository.searchTasks(ownerEmail, taskName, statusName, username, startOfDay, endOfDay, pageable).map(taskMapper::toDto);
     }
 }

@@ -32,7 +32,7 @@ public class TaskImportExportService {
     public byte[] export(FileFormat format) {
         log.info("Exporting tasks as {}", format);
 
-        List<TaskDTO> tasks = taskService.getTasks();
+        List<TaskDTO> tasks = taskService.getAllTasks();
 
         Map<String, String> statusNames = statusTypeRepository.findAll().stream()
                 .collect(Collectors.toMap(StatusType::getStatusTypeId, StatusType::getStatusName));
@@ -56,7 +56,7 @@ public class TaskImportExportService {
 
         String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        Set<String> existingSignatures = taskService.getTasks().stream()
+        Set<String> existingSignatures = taskService.getAllTasks().stream()
                 .map(this::taskSignature)
                 .collect(Collectors.toSet());
 
