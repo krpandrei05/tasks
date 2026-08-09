@@ -16,7 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
+import com.example.tasks.config.PermissionChecker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,6 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final TaskRepository taskRepository;
     private final RoleRepository roleRepository;
+    private final PermissionChecker permissionChecker;
 
     public List<UserDTO> getAllUsers() {
         log.info("Users retrieved!");
@@ -44,7 +45,7 @@ public class UserService {
     public UserDTO updateUserRole(Long userId, String roleName) {
         log.info("Updating role of user with id: {} to {}", userId, roleName);
 
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentEmail = permissionChecker.getCurrentUserEmail();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found: " + userId));
 
