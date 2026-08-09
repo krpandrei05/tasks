@@ -55,10 +55,10 @@ public class ExcelTaskExporter implements TaskExporter {
         row.createCell(1).setCellValue(rowData.getStatusName());
         row.createCell(2).setCellValue(rowData.getUsername());
 
-        Cell dueDaateCell = row.createCell(3);
-        if (rowData.getCreationDate() != null) {
-            dueDaateCell.setCellValue(rowData.getDueDate());
-            dueDaateCell.setCellStyle(dateStyle);
+        Cell dueDateCell = row.createCell(3);
+        if (rowData.getDueDate() != null) {
+            dueDateCell.setCellValue(rowData.getDueDate());
+            dueDateCell.setCellStyle(dateStyle);
         }
 
         row.createCell(4).setCellValue(rowData.getCreatedBy() != null ? rowData.getCreatedBy() : "");
