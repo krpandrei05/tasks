@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class StatusTypeServiceTest {
-
     @Mock
     private StatusTypeRepository statusTypeRepository;
 
@@ -86,7 +85,7 @@ class StatusTypeServiceTest {
         List<StatusTypeDTO> result = statusTypeService.getAllStatuses();
 
         assertEquals(2, result.size());
-        assertEquals(pendingStatusDto, result.get(0));
+        assertEquals(pendingStatusDto, result.get(0))  ;
         assertEquals(inProgressDto, result.get(1));
     }
 
