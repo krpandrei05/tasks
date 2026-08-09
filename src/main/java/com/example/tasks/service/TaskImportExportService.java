@@ -1,5 +1,6 @@
 package com.example.tasks.service;
 
+import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.StatusType;
 import com.example.tasks.domain.User;
 import com.example.tasks.dto.TaskDTO;
@@ -11,7 +12,6 @@ import com.example.tasks.service.importexport.TaskFileRow;
 import com.example.tasks.service.importexport.TaskImporter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +28,7 @@ public class TaskImportExportService {
     private final UserRepository userRepository;
     private final List<TaskExporter> exporters;
     private final List<TaskImporter> importers;
+    private final PermissionChecker permissionChecker;
 
     public byte[] export(FileFormat format) {
         log.info("Exporting tasks as {}", format);
@@ -54,7 +55,7 @@ public class TaskImportExportService {
         TaskImporter importer = findImporter(format);
         List<TaskFileRow> rows = importer.parse(fileContent);
 
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentEmail = permissionChecker.getCurrentUserEmail();
 
         Set<String> existingSignatures = taskService.getAllTasks().stream()
                 .map(this::taskSignature)
