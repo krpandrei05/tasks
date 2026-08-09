@@ -1,5 +1,6 @@
 package com.example.tasks.service;
 
+import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.Role;
 import com.example.tasks.domain.User;
 import com.example.tasks.dto.CredentialsDTO;
@@ -32,6 +33,8 @@ public class AuthService {
     private final JwtService jwtService;
 
     private final UserMapper userMapper;
+
+    private final PermissionChecker permissionChecker;
 
     public ResponseEntity<String> login(CredentialsDTO credentialsDTO) throws JoseException {
         log.info("Login attempt (auth flow) for email: {}", credentialsDTO.getEmail());
@@ -108,7 +111,7 @@ public class AuthService {
     }
 
     public ResponseEntity<UserDTO> getCurrentUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = permissionChecker.getCurrentUserEmail();
 
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
