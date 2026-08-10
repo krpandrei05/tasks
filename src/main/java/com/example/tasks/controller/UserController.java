@@ -1,6 +1,5 @@
 package com.example.tasks.controller;
 
-import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UpdateRoleDTO;
 import com.example.tasks.dto.UserDTO;
 import com.example.tasks.service.UserService;
@@ -29,11 +28,6 @@ public class UserController {
     @PutMapping("/{id}/role")
     public UserDTO updateUserRole(@PathVariable Long id, @Valid @RequestBody UpdateRoleDTO updateRoleDTO) {
         return userService.updateUserRole(id, updateRoleDTO.getRoleName());
-    }
-
-    @PostMapping
-    public UserDTO createUser(@RequestBody @Valid UserDTO userDTO) {
-        return userService.createUser(userDTO);
     }
 
     @DeleteMapping("/{id}/with-tasks")

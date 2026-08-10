@@ -1,20 +1,18 @@
 package com.example.tasks.service;
 
+import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.Role;
 import com.example.tasks.domain.Task;
 import com.example.tasks.domain.User;
-import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UserDTO;
 import com.example.tasks.mapper.UserMapper;
 import com.example.tasks.repository.RoleRepository;
 import com.example.tasks.repository.TaskRepository;
 import com.example.tasks.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import com.example.tasks.config.PermissionChecker;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -60,15 +58,6 @@ public class UserService {
         UserDTO userDTO = userMapper.toDto(savedUser);
         userDTO.setPassword(null);
         return userDTO;
-    }
-
-    @Transactional
-    public UserDTO createUser(@Valid UserDTO userDTO) {
-        log.info("User created!");
-        User user = userMapper.toEntity(userDTO);
-        User savedUser = userRepository.save(user);
-
-        return userMapper.toDto(savedUser);
     }
 
     @Transactional

@@ -153,24 +153,6 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser_mapsSavesAndReturnsDto() {
-        User unsavedUser = User.builder()
-                .username("andrei")
-                .email("andrei.krp@gmail.com")
-                .password("hashed-password")
-                .build();
-
-        when(userMapper.toEntity(existingUserDto)).thenReturn(unsavedUser);
-        when(userRepository.save(unsavedUser)).thenReturn(existingUser);
-        when(userMapper.toDto(existingUser)).thenReturn(existingUserDto);
-
-        UserDTO result = userService.createUser(existingUserDto);
-
-        assertEquals(existingUserDto, result);
-        verify(userRepository, times(1)).save(unsavedUser);
-    }
-
-    @Test
     void deleteUserWithTasks_deletesOnlyMatchingTasksAndTheUser() {
         Task matchingTask = Task.builder()
                 .taskId(100L)
