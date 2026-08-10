@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -58,30 +57,6 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO task) {
         return taskService.updateTask(id, task);
-    }
-
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'CREATE')")
-    @PostMapping("/batch")
-    public List<TaskDTO> addTasks(@Valid @RequestBody List<TaskDTO> tasks) {
-        return taskService.addTasksFromList(tasks);
-    }
-
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'UPDATE')")
-    @PatchMapping("/{id}/status")
-    public TaskDTO updateTaskStatus(@PathVariable Long id, @RequestBody String statusTypeId) {
-        return taskService.updateTaskStatus(id, statusTypeId);
-    }
-
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'DELETE')")
-    @DeleteMapping
-    public void deleteAllTasks() {
-        taskService.deleteAllTasks();
-    }
-
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
-    @GetMapping("/due-before")
-    public List<TaskDTO> getTasksDueBefore(@RequestParam LocalDateTime date) {
-        return taskService.getTasksDueBefore(date);
     }
 
     // [Homework 1] 1st endpoint

@@ -66,17 +66,6 @@ public class TaskService {
     }
 
     @Transactional
-    public List<TaskDTO> addTasksFromList(List<TaskDTO> taskDTOs) {
-        log.info("Adding tasks from a list: {}", taskDTOs);
-        List<Task> tasks = taskDTOs.stream()
-                .map(dto -> taskMapper.toEntity(dto, findStatusType(dto.getStatusTypeId()), findUser(dto.getUserId())))
-                .toList();
-        taskRepository.saveAll(tasks);
-
-        return getAllTasks();
-    }
-
-    @Transactional
     public TaskDTO updateTask(Long id, @Valid TaskDTO taskDTO) {
         log.info("Updating task with id: {}", id);
         Task task = taskRepository.findById(id)
@@ -105,36 +94,12 @@ public class TaskService {
     }
 
     @Transactional
-    public void deleteAllTasks() {
-        log.info("Deleting all tasks");
-        taskRepository.deleteAll();
-    }
-
-    @Transactional
-    public TaskDTO updateTaskStatus(Long id, String statusTypeId) {
-        log.info("Updating status of task with id: {} to {}", id, statusTypeId);
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
-        task.setStatusType(findStatusType(statusTypeId));
-        return taskMapper.toDto(task);
-    }
-
-    @Transactional
     public TaskDTO updateTaskContent(Long id, String taskName) {
         log.info("Updating content of task with id: {} to {}", id, taskName);
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));
         task.setTaskName(taskName);
         return taskMapper.toDto(task);
-    }
-
-    public List<TaskDTO> getTasksDueBefore(LocalDateTime date) {
-        log.info("Getting tasks due before: {}", date);
-        return taskRepository.findByDueDateBefore(date)
-                .stream()
-                .filter(permissionChecker::canAccessTask)
-                .map(taskMapper::toDto)
-                .toList();
     }
 
     public List<TaskDTO> getTasksByStatus(String statusName) {

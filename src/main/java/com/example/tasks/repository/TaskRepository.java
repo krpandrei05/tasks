@@ -16,8 +16,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     // Query method
     List<Task> findByStatusType_StatusName(String statusName);
 
-    List<Task> findByDueDateBefore(LocalDateTime date);
-
     // @Query explicit
     @Query("SELECT t FROM Task t WHERE t.dueDate < :date AND t.statusType.statusName != 'Completed'")
     List<Task> findOverdueTasksExcludingDone(@Param("date") LocalDateTime date);

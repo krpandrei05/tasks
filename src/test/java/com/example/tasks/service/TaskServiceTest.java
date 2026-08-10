@@ -201,32 +201,6 @@ class TaskServiceTest {
     }
 
     @Test
-    void addTasksFromList_savesAllAndReturnsFullTaskList() {
-        TaskDTO secondDto = TaskDTO.builder()
-                .taskName("Review PR")
-                .statusTypeId("status-1")
-                .userId(1L)
-                .dueDate(existingTaskDto.getDueDate())
-                .build();
-
-        Task unsavedFirst = Task.builder().taskName("Write handover").statusType(pendingStatus).user(assignedUser).build();
-        Task unsavedSecond = Task.builder().taskName("Review PR").statusType(pendingStatus).user(assignedUser).build();
-
-        when(statusTypeRepository.findById("status-1")).thenReturn(Optional.of(pendingStatus));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(assignedUser));
-        when(taskMapper.toEntity(existingTaskDto, pendingStatus, assignedUser)).thenReturn(unsavedFirst);
-        when(taskMapper.toEntity(secondDto, pendingStatus, assignedUser)).thenReturn(unsavedSecond);
-        when(taskRepository.findAll()).thenReturn(List.of(existingTask));
-        when(taskMapper.toDto(existingTask)).thenReturn(existingTaskDto);
-
-        List<TaskDTO> result = taskService.addTasksFromList(List.of(existingTaskDto, secondDto));
-
-        assertEquals(1, result.size());
-        assertEquals(existingTaskDto, result.get(0));
-        verify(taskRepository, times(1)).saveAll(List.of(unsavedFirst, unsavedSecond));
-    }
-
-    @Test
     void updateTask_updatesFieldsAndReturnsDto_whenAllowed() {
         TaskDTO updateDto = TaskDTO.builder()
                 .taskName("Write handover v2")
@@ -297,57 +271,6 @@ class TaskServiceTest {
         verify(taskRepository, never()).deleteById(any());
     }
 
-    // Verificare "deleteAll()"
-    @Test
-    void deleteAllTasks_callsRepositoryDeleteAll() {
-        taskService.deleteAllTasks();
-
-        verify(taskRepository, times(1)).deleteAll();
-    }
-
-    @Test
-    void updateTaskStatus_updatesStatusAndReturnsDto_whenTaskAndStatusExist() {
-        StatusType completedStatus = StatusType.builder()
-                .statusTypeId("status-2")
-                .statusName("Completed")
-                .build();
-        TaskDTO updatedDto = TaskDTO.builder()
-                .taskId(100L)
-                .taskName("Write handover")
-                .statusTypeId("status-2")
-                .userId(1L)
-                .dueDate(existingTaskDto.getDueDate())
-                .build();
-
-        when(taskRepository.findById(100L)).thenReturn(Optional.of(existingTask));
-        when(statusTypeRepository.findById("status-2")).thenReturn(Optional.of(completedStatus));
-        when(taskMapper.toDto(existingTask)).thenReturn(updatedDto);
-
-        TaskDTO result = taskService.updateTaskStatus(100L, "status-2");
-
-        assertEquals(updatedDto, result);
-        assertEquals(completedStatus, existingTask.getStatusType());
-    }
-
-    @Test
-    void updateTaskStatus_throwsTaskNotFoundException_whenTaskDoesNotExist() {
-        when(taskRepository.findById(999L)).thenReturn(Optional.empty());
-
-        assertThrows(TaskNotFoundException.class, () -> taskService.updateTaskStatus(999L, "status-1"));
-
-        verify(statusTypeRepository, never()).findById(any());
-    }
-
-    @Test
-    void updateTaskStatus_throwsRuntimeException_whenStatusTypeDoesNotExist() {
-        when(taskRepository.findById(100L)).thenReturn(Optional.of(existingTask));
-        when(statusTypeRepository.findById("missing-status")).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> taskService.updateTaskStatus(100L, "missing-status"));
-
-        assertEquals(pendingStatus, existingTask.getStatusType());
-    }
-
     @Test
     void updateTaskContent_updatesNameAndReturnsDto_whenTaskExists() {
         TaskDTO updatedDto = TaskDTO.builder()
@@ -374,32 +297,6 @@ class TaskServiceTest {
         assertThrows(TaskNotFoundException.class, () -> taskService.updateTaskContent(999L, "New name"));
 
         verify(taskMapper, never()).toDto(any());
-    }
-
-    @Test
-    void getTasksDueBefore_returnsOnlyAccessibleTasks() {
-        Task accessibleTask = existingTask;
-        Task inaccessibleTask = Task.builder()
-                .taskId(200L)
-                .taskName("Someone else's task")
-                .statusType(pendingStatus)
-                .user(User.builder().userId(2L).email("other@example.com").build())
-                .dueDate(existingTaskDto.getDueDate())
-                .build();
-
-        LocalDateTime cutoff = LocalDateTime.of(2026, 8, 20, 0, 0);
-
-        when(taskRepository.findByDueDateBefore(cutoff))
-                .thenReturn(List.of(accessibleTask, inaccessibleTask));
-        when(permissionChecker.canAccessTask(accessibleTask)).thenReturn(true);
-        when(permissionChecker.canAccessTask(inaccessibleTask)).thenReturn(false);
-        when(taskMapper.toDto(accessibleTask)).thenReturn(existingTaskDto);
-
-        List<TaskDTO> result = taskService.getTasksDueBefore(cutoff);
-
-        assertEquals(1, result.size());
-        assertEquals(existingTaskDto, result.get(0));
-        verify(taskMapper, never()).toDto(inaccessibleTask);
     }
 
     @Test
