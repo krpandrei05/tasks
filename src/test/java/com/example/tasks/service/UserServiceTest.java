@@ -4,10 +4,7 @@ import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.Role;
 import com.example.tasks.domain.Task;
 import com.example.tasks.domain.User;
-import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UserDTO;
-import com.example.tasks.dto.UserResponseDTO;
-import com.example.tasks.exception.InvalidCredentialsException;
 import com.example.tasks.mapper.UserMapper;
 import com.example.tasks.repository.RoleRepository;
 import com.example.tasks.repository.TaskRepository;
@@ -197,48 +194,5 @@ class UserServiceTest {
 
         verify(taskRepository, times(1)).deleteAll(List.of(matchingTask));
         verify(userRepository, times(1)).deleteById(1L);
-    }
-
-    // Cazul 1 - Email inexistent
-    @Test
-    void login_throwsInvalidCredentialsException_whenEmailDoesNotExist() {
-        CredentialsDTO credentials = CredentialsDTO.builder()
-                .email("necunoscut@example.com")
-                .password("orice")
-                .build();
-
-        when(userRepository.findByEmail("necunoscut@example.com")).thenReturn(Optional.empty());
-
-        assertThrows(InvalidCredentialsException.class, () -> userService.login(credentials));
-    }
-
-    // Cazul 2 - Parola gresita
-    @Test
-    void login_throwsInvalidCredentialsException_whenPasswordIsWrong() {
-        CredentialsDTO credentials = CredentialsDTO.builder()
-                .email("andrei.krp@gmail.com")
-                .password("parola-gresita")
-                .build();
-
-        when(userRepository.findByEmail("andrei.krp@gmail.com")).thenReturn(Optional.of(existingUser));
-
-        assertThrows(InvalidCredentialsException.class, () -> userService.login(credentials));
-    }
-
-    // Cazul 3 - Succes
-    @Test
-    void login_returnsUserResponseDto_whenCredentialsAreCorrect() {
-        CredentialsDTO credentials = CredentialsDTO.builder()
-                .email("andrei.krp@gmail.com")
-                .password("hashed-password")
-                .build();
-
-        when(userRepository.findByEmail("andrei.krp@gmail.com")).thenReturn(Optional.of(existingUser));
-
-        UserResponseDTO result = userService.login(credentials);
-
-        assertEquals(1L, result.getUserId());
-        assertEquals("andrei", result.getUsername());
-        assertEquals("andrei.krp@gmail.com", result.getEmail());
     }
 }

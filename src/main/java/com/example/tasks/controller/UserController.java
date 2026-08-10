@@ -3,7 +3,6 @@ package com.example.tasks.controller;
 import com.example.tasks.dto.CredentialsDTO;
 import com.example.tasks.dto.UpdateRoleDTO;
 import com.example.tasks.dto.UserDTO;
-import com.example.tasks.dto.UserResponseDTO;
 import com.example.tasks.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,10 +39,5 @@ public class UserController {
     @DeleteMapping("/{id}/with-tasks")
     public void deleteUserWithTasks(@PathVariable Long id) {
         userService.deleteUserWithTasks(id);
-    }
-
-    @PostMapping("/login")
-    public UserResponseDTO login(@Valid @RequestBody CredentialsDTO credentialsDTO) {
-        return userService.login(credentialsDTO);
     }
 }
