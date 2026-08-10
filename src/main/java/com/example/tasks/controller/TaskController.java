@@ -53,6 +53,7 @@ public class TaskController {
     }
 
     // [Homework 5] Search
+    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
     @GetMapping("/search")
     public Page<TaskDTO> searchTasks(
             @RequestParam(required = false) String taskName,
