@@ -9,17 +9,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    // Query method
-    List<Task> findByStatusType_StatusName(String statusName);
-
-    // @Query explicit
-    @Query("SELECT t FROM Task t WHERE t.dueDate < :date AND t.statusType.statusName != 'Completed'")
-    List<Task> findOverdueTasksExcludingDone(@Param("date") LocalDateTime date);
-
     @Query("SELECT t FROM Task t " +
             "LEFT JOIN t.user u " +
             "LEFT JOIN t.statusType s " +

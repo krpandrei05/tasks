@@ -93,40 +93,6 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
-    @Transactional
-    public TaskDTO updateTaskContent(Long id, String taskName) {
-        log.info("Updating content of task with id: {} to {}", id, taskName);
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
-        task.setTaskName(taskName);
-        return taskMapper.toDto(task);
-    }
-
-    public List<TaskDTO> getTasksByStatus(String statusName) {
-        log.info("Getting tasks with status: {}", statusName);
-        return taskRepository.findByStatusType_StatusName(statusName)
-                .stream()
-                .filter(permissionChecker::canAccessTask)
-                .map(taskMapper::toDto)
-                .toList();
-    }
-
-    public int getTasksCount() {
-        int count = (int) taskRepository.count();
-        log.info("Getting tasks count: {}", count);
-        return count;
-    }
-
-    public List<TaskDTO> getOverdueTasks() {
-        LocalDateTime now = LocalDateTime.now();
-        log.info("Getting overdue tasks (excluding Completed). Current date: {}", now);
-        return taskRepository.findOverdueTasksExcludingDone(now)
-                .stream()
-                .filter(permissionChecker::canAccessTask)
-                .map(taskMapper::toDto)
-                .toList();
-    }
-
     private StatusType findStatusType(String statusTypeId) {
         return statusTypeRepository.findById(statusTypeId)
                 .orElseThrow(() -> new RuntimeException("Status type not found: " + statusTypeId));

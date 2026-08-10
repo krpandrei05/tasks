@@ -11,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 import jakarta.validation.Valid;
@@ -57,34 +56,6 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO task) {
         return taskService.updateTask(id, task);
-    }
-
-    // [Homework 1] 1st endpoint
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
-    @GetMapping("/status/{statusName}")
-    public List<TaskDTO> getTasksByStatus(@PathVariable String statusName) {
-        return taskService.getTasksByStatus(statusName);
-    }
-
-    // [Homework 1] 2nd endpoint
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
-    @GetMapping("/count")
-    public int getTaskCount() {
-        return taskService.getTasksCount();
-    }
-
-    // [Homework 1] 3rd endpoint
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
-    @GetMapping("/overdue")
-    public List<TaskDTO> getOverdueTasks() {
-        return taskService.getOverdueTasks();
-    }
-
-    // [Homework 1] 4th endpoint
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'UPDATE')")
-    @PatchMapping("/{id}/content")
-    public TaskDTO updateTaskContent(@PathVariable Long id, @RequestBody String taskName) {
-        return taskService.updateTaskContent(id, taskName);
     }
 
     @PreAuthorize("@permissionChecker.hasPermission('TASK', 'UPDATE')")
