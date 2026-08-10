@@ -29,9 +29,4 @@ public class UserController {
     public UserDTO updateUserRole(@PathVariable Long id, @Valid @RequestBody UpdateRoleDTO updateRoleDTO) {
         return userService.updateUserRole(id, updateRoleDTO.getRoleName());
     }
-
-    @DeleteMapping("/{id}/with-tasks")
-    public void deleteUserWithTasks(@PathVariable Long id) {
-        userService.deleteUserWithTasks(id);
-    }
 }

@@ -2,7 +2,6 @@ package com.example.tasks.controller;
 
 import com.example.tasks.dto.StatusTypeDTO;
 import com.example.tasks.service.StatusTypeService;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,15 +18,5 @@ public class StatusTypeController {
     @GetMapping
     public List<StatusTypeDTO> getAllStatuses() {
         return statusTypeService.getAllStatuses();
-    }
-
-    @PostMapping
-    public StatusTypeDTO createStatus(@RequestBody @Valid StatusTypeDTO statusTypeDTO) {
-        return statusTypeService.createStatus(statusTypeDTO);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteStatusAndReassignTasks(@PathVariable String id, @RequestParam String replacementStatusId) {
-        statusTypeService.deleteStatusAndReassignTasks(id, replacementStatusId);
     }
 }

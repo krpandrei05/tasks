@@ -2,12 +2,10 @@ package com.example.tasks.service;
 
 import com.example.tasks.config.PermissionChecker;
 import com.example.tasks.domain.Role;
-import com.example.tasks.domain.Task;
 import com.example.tasks.domain.User;
 import com.example.tasks.dto.UserDTO;
 import com.example.tasks.mapper.UserMapper;
 import com.example.tasks.repository.RoleRepository;
-import com.example.tasks.repository.TaskRepository;
 import com.example.tasks.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,9 +30,6 @@ class UserServiceTest {
 
     @Mock
     private UserMapper userMapper;
-
-    @Mock
-    private TaskRepository taskRepository;
 
     @Mock
     private RoleRepository roleRepository;
@@ -150,31 +145,5 @@ class UserServiceTest {
         assertEquals(adminRole, existingUser.getRole());
         assertEquals("ADMIN", result.getRoleName());
         assertNull(result.getPassword());
-    }
-
-    @Test
-    void deleteUserWithTasks_deletesOnlyMatchingTasksAndTheUser() {
-        Task matchingTask = Task.builder()
-                .taskId(100L)
-                .taskName("Write handover")
-                .user(existingUser)
-                .build();
-        Task unrelatedTask = Task.builder()
-                .taskId(200L)
-                .taskName("Unrelated task")
-                .user(User.builder().userId(9L).email("other@example.com").build())
-                .build();
-        Task nullUserTask = Task.builder()
-                .taskId(300L)
-                .taskName("Unassigned task")
-                .user(null)
-                .build();
-
-        when(taskRepository.findAll()).thenReturn(List.of(matchingTask, unrelatedTask, nullUserTask));
-
-        userService.deleteUserWithTasks(1L);
-
-        verify(taskRepository, times(1)).deleteAll(List.of(matchingTask));
-        verify(userRepository, times(1)).deleteById(1L);
     }
 }
