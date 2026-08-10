@@ -43,16 +43,6 @@ public class TaskService {
         return taskRepository.findAll().stream().map(taskMapper::toDto).toList();
     }
 
-    public TaskDTO getTaskById(Long id) {
-        log.info("Getting task by id: {}", id);
-        Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException(id));
-        if (!permissionChecker.canAccessTask(task)) {
-            throw new AccessDeniedException("Not allowed to access this task");
-        }
-        return taskMapper.toDto(task);
-    }
-
     @Transactional
     public TaskDTO addTask(@Valid TaskDTO taskDTO) {
         log.info("Adding task: {}", taskDTO);
@@ -101,19 +91,6 @@ public class TaskService {
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-    }
-
-    @Transactional
-    public void transferTasks(Long fromUserId, Long toUserId) {
-        log.info("Transferring tasks from user {} to user {}", fromUserId, toUserId);
-        User newUser = findUser(toUserId);
-        List<Task> tasks = taskRepository.findAll().stream()
-                .filter(task -> task.getUser() != null && task.getUser().getUserId().equals(fromUserId))
-                .toList();
-
-        for (Task task : tasks) {
-            task.setUser(newUser);
-        }
     }
 
     public Page<TaskDTO> searchTasks(String taskName, String statusName, String username, LocalDate dueDate, Pageable pageable) {

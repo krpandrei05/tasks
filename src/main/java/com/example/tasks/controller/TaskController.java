@@ -34,12 +34,6 @@ public class TaskController {
         return taskService.getTasks(buildPageable(page, size, sortBy, sortDir));
     }
 
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'READ')")
-    @GetMapping("/{id}")
-    public TaskDTO getTaskById(@PathVariable Long id) {
-        return taskService.getTaskById(id);
-    }
-
     @PreAuthorize("@permissionChecker.hasPermission('TASK', 'CREATE')")
     @PostMapping
     public TaskDTO addTask(@Valid @RequestBody TaskDTO task) {
@@ -56,12 +50,6 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody TaskDTO task) {
         return taskService.updateTask(id, task);
-    }
-
-    @PreAuthorize("@permissionChecker.hasPermission('TASK', 'UPDATE')")
-    @PatchMapping("/transfer")
-    public void transferTasks(@RequestParam Long fromUserId, @RequestParam Long toUserId) {
-        taskService.transferTasks(fromUserId, toUserId);
     }
 
     // [Homework 5] Search

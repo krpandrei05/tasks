@@ -115,37 +115,6 @@ class TaskServiceTest {
     }
 
     @Test
-    void getTaskById_returnsDto_whenTaskExistsAndUserCanAccess() {
-        when(taskRepository.findById(100L)).thenReturn(Optional.of(existingTask));
-        when(permissionChecker.canAccessTask(existingTask)).thenReturn(true);
-        when(taskMapper.toDto(existingTask)).thenReturn(existingTaskDto);
-
-        TaskDTO result = taskService.getTaskById(100L);
-
-        assertEquals(existingTaskDto, result);
-    }
-
-    @Test
-    void getTaskById_throwsTaskNotFoundException_whenTaskDoesNotExist() {
-        when(taskRepository.findById(999L)).thenReturn(Optional.empty());
-
-        assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(999L));
-
-        verify(permissionChecker, never()).canAccessTask(any());
-        verify(taskMapper, never()).toDto(any());
-    }
-
-    @Test
-    void getTaskById_throwsAccessDeniedException_whenUserCannotAccessTask() {
-        when(taskRepository.findById(100L)).thenReturn(Optional.of(existingTask));
-        when(permissionChecker.canAccessTask(existingTask)).thenReturn(false);
-
-        assertThrows(AccessDeniedException.class, () -> taskService.getTaskById(100L));
-
-        verify(taskMapper, never()).toDto(any());
-    }
-
-    @Test
     void addTask_savesAndReturnsDto_whenStatusAndUserExist() {
         Task unsavedTask = Task.builder()
                 .taskName("Write handover")
@@ -269,45 +238,6 @@ class TaskServiceTest {
         assertThrows(AccessDeniedException.class, () -> taskService.deleteTask(100L));
 
         verify(taskRepository, never()).deleteById(any());
-    }
-
-    @Test
-    void transferTasks_reassignsOnlyMatchingTasksToNewUser() {
-        User newOwner = User.builder().userId(3L).email("new-owner@example.com").build();
-
-        Task matchingTask = Task.builder()
-                .taskId(100L)
-                .taskName("Write handover")
-                .user(assignedUser)
-                .build();
-        Task unrelatedTask = Task.builder()
-                .taskId(200L)
-                .taskName("Unrelated task")
-                .user(User.builder().userId(9L).email("other@example.com").build())
-                .build();
-        Task nullUserTask = Task.builder()
-                .taskId(300L)
-                .taskName("Unassigned task")
-                .user(null)
-                .build();
-
-        when(userRepository.findById(3L)).thenReturn(Optional.of(newOwner));
-        when(taskRepository.findAll()).thenReturn(List.of(matchingTask, unrelatedTask, nullUserTask));
-
-        taskService.transferTasks(1L, 3L);
-
-        assertEquals(newOwner, matchingTask.getUser());
-        assertEquals(9L, unrelatedTask.getUser().getUserId());
-        assertNull(nullUserTask.getUser());
-    }
-
-    @Test
-    void transferTasks_throwsRuntimeException_whenToUserDoesNotExist() {
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> taskService.transferTasks(1L, 999L));
-
-        verify(taskRepository, never()).findAll();
     }
 
     // Cazul 1 - ADMIN
