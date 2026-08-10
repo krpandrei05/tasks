@@ -71,12 +71,12 @@ public class AuthService {
     public ResponseEntity<String> register(UserDTO userDTO) {
         String email = new String(Base64.getDecoder().decode(userDTO.getEmail()), StandardCharsets.UTF_8);
         if (userRepository.findByEmail(email).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already is registered");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already registered");
         }
 
         String username = new String(Base64.getDecoder().decode(userDTO.getUsername()), StandardCharsets.UTF_8);
         if (userRepository.findByUsername(username).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already is registred");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already registered");
         }
 
         String password = new String(Base64.getDecoder().decode(userDTO.getPassword()), StandardCharsets.UTF_8);

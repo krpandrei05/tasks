@@ -151,7 +151,7 @@ class AuthServiceTest {
         ResponseEntity<String> result = authService.register(userDTO);
 
         assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
-        assertEquals("Email already is registered", result.getBody());
+        assertEquals("Email is already registered", result.getBody());
         verify(userRepository, never()).findByUsername(any());
         verify(userRepository, never()).save(any());
     }
@@ -171,7 +171,7 @@ class AuthServiceTest {
         ResponseEntity<String> result = authService.register(userDTO);
 
         assertEquals(HttpStatus.CONFLICT, result.getStatusCode());
-        assertEquals("Username already is registred", result.getBody());
+        assertEquals("Username is already registered", result.getBody());
         verify(userRepository, never()).save(any());
     }
 

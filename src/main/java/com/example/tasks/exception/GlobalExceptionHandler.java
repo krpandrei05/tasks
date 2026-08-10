@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "An unexpected error occured"));
+                .body(Map.of("error", "An unexpected error occurred"));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
