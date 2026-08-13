@@ -10,6 +10,7 @@ import com.example.tasks.service.importexport.FileFormat;
 import com.example.tasks.service.importexport.TaskExporter;
 import com.example.tasks.service.importexport.TaskFileRow;
 import com.example.tasks.service.importexport.TaskImporter;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,7 @@ public class TaskImportExportService {
         return exporter.export(rows);
     }
 
+    @Transactional
     public void importTasks(byte[] fileContent, FileFormat format) {
         log.info("Importing tasks from {}", format);
 

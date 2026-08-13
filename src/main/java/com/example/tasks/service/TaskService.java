@@ -11,7 +11,6 @@ import com.example.tasks.repository.StatusTypeRepository;
 import com.example.tasks.repository.TaskRepository;
 import com.example.tasks.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -44,7 +43,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO addTask(@Valid TaskDTO taskDTO) {
+    public TaskDTO addTask(TaskDTO taskDTO) {
         log.info("Adding task: {}", taskDTO);
         StatusType statusType = findStatusType(taskDTO.getStatusTypeId());
         User user = findUser(taskDTO.getUserId());
@@ -56,7 +55,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO updateTask(Long id, @Valid TaskDTO taskDTO) {
+    public TaskDTO updateTask(Long id, TaskDTO taskDTO) {
         log.info("Updating task with id: {}", id);
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException(id));

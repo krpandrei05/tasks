@@ -299,3 +299,14 @@ ORDER BY r.role_id;
 
 -- Unicitate pe USERNAME
 ALTER TABLE USERS ADD CONSTRAINT UQ_USERS_USERNAME UNIQUE (USERNAME);
+
+
+
+-- Partea 1 - Autentificare
+SELECT u.username, u.email, u.password, u.salt, r.role_name
+FROM USERS u
+JOIN ROLES r ON u.role_id = r.role_id
+WHERE u.username = 'demouser';
+
+-- Partea 3 - 9.
+SELECT * FROM TASKS;
